@@ -53,7 +53,11 @@
                 event.preventDefault();
                 var app = this;
                 var newbook = app.book;
-                axios.post('/api/v1/books', newbook)
+                axios.post('/api/v1/books', newbook, {
+                    headers: {
+                        'Authorization': this.$auth.getToken()
+                    }
+                })
                     .then(function (resp) {
                         app.$router.push({path: '/'});
                     })

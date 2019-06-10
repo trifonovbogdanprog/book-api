@@ -2,7 +2,8 @@
     <div class="container h-100">
         <div class="form-group">
             <router-link :to="{name: 'createbook'}" class="btn btn-success">Create new book</router-link>
-            <router-link :to="{name: 'register'}" class="btn btn-success">Register</router-link>
+            <router-link :to="{name: 'register'}" class="btn btn-danger">Register</router-link>
+            <router-link :to="{name: 'login'}" class="btn btn-primary">Login</router-link>
         </div>
 
         <div class="panel panel-default">
@@ -23,9 +24,6 @@
                         <td>{{ book.author }}</td>
                         <td>{{ book.present_year }}</td>
                         <td>
-                            <router-link :to="{name: 'editbook', params: {id: book.id}}" class="btn btn-xs btn-default">
-                                <i class="glyphicons fa-pencil"></i> Edit
-                            </router-link>
                             <a href="#"
                                class="btn btn-xs bt-default"
                                v-on:click="deleteEntry(book.id, index)">
@@ -49,20 +47,29 @@
         },
         mounted() {
             var app = this;
-            axios.get('/api/v1/books')
+            axios.get('/api/v1/books', {
+                headers: {
+                    'Authorization': this.$auth.getToken()
+                }
+            })
                 .then(function (resp) {
                     app.books = resp.data;
                 })
                 .catch(function (resp) {
                     console.log(resp);
-                    alert("Could not load books");
+                    // alert("Could not load books");
                 });
         },
         methods: {
             deleteEntry(id, index) {
                 if (confirm("Do you really want to delete it?")) {
                     var app = this;
-                    axios.delete('/api/v1/books/' + id)
+
+                    axios.delete('/api/v1/books/' + id, {
+                        headers: {
+                            'Authorization': this.$auth.getToken()
+                        }
+                    })
                         .then(function (resp) {
                             app.books.splice(index, 1);
                         })

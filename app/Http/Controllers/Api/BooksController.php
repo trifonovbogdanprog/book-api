@@ -16,7 +16,7 @@ class BooksController extends Controller
      */
     public function index()
     {
-        return Books::all();
+        return Books::where('owner_id',  \Auth::user()->id)->get();
     }
 
     /**
@@ -37,8 +37,7 @@ class BooksController extends Controller
      */
     public function store(Request $request)
     {
-        $user = $this->checkAuth($request->header('Authorization'));
-        $request['owner_id'] = $user->id;
+        $request['owner_id'] = \Auth::user()->id;
         $books = Books::create($request->all());
         return $books;
     }
@@ -95,11 +94,11 @@ class BooksController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $user = $this->checkAuth($request->header('Authorization'));
 
-        $book = Books::where('id', $id)->where('owner_id', $user->id);
+        $book = Books::where('id', $id)->where('owner_id', \Auth::user()->id);
+        $book->delete();
 
-        return response()->json($book);
+        return response()->json(['message' => 'Deleted!']);
     }
 
     private function checkAuth($token)
